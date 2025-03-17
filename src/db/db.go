@@ -19,5 +19,6 @@ func GetDb() *weaviate.Client {
 		client := weaviate.New(config)
 		dbConnection = client
 	})
+
 	return dbConnection
 }

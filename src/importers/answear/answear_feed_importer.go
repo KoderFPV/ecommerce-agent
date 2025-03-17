@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	batchSize = 20
+	batchSize = 50
 )
 
 func ImportAnswearFeed() {
@@ -66,15 +66,13 @@ func ImportAnswearFeed() {
 			products = append(products, product)
 			if len(products) == batchSize {
 				// Zapisz partię produktów do bazy
-				for _, p := range products {
-					InsertNewProduct(ctx, client, p)
-				}
+				InsertBatchProducts(ctx, client, products)
 				products = products[:0] // Wyczyść slice
 			}
 		}
 		// Zapisz pozostałe produkty
-		for _, p := range products {
-			InsertNewProduct(ctx, client, p)
+		if len(products) > 0 {
+			InsertBatchProducts(ctx, client, products)
 		}
 		doneChan <- true
 	}()
