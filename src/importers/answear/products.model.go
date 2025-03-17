@@ -23,7 +23,7 @@ func CreateProductsClass(ctx context.Context, client *weaviate.Client) error {
 		Vectorizer:      "multi2vec-clip",
 		Properties: []*models.Property{
 			{
-				DataType:    []string{"string"},
+				DataType:    []string{"int"},
 				Description: "The name of the file",
 				Name:        "productId",
 			},
@@ -36,11 +36,6 @@ func CreateProductsClass(ctx context.Context, client *weaviate.Client) error {
 				DataType:    []string{"blob"},
 				Description: "Base64 encoded image",
 				Name:        "image",
-			},
-			{
-				DataType:    []string{"string"},
-				Description: "Temp field to check if save to db",
-				Name:        "temp",
 			},
 		},
 	}
@@ -55,17 +50,11 @@ func InsertNewProduct(ctx context.Context, client *weaviate.Client, product Prod
 		return
 	}
 
-	object := &models.Object{
-		Class: ProductsCollectionName,
-		Properties: map[string]any{
-			"productId": product.ID,
-			"image":     base64Image,
-			"filename":  product.ImageLink,
-			"temp":      "jestem tu uuuu, co ja tutaj robie",
-		},
-	}
-
-	res, err := client.Data().Creator().WithClassName(ProductsCollectionName).WithProperties(object).Do(ctx)
+	res, err := client.Data().Creator().WithClassName(ProductsCollectionName).WithProperties(map[string]any{
+		"productId": product.ID,
+		"image":     base64Image,
+		"filename":  product.ImageLink,
+	}).Do(ctx)
 
 	fmt.Println(res)
 
@@ -81,7 +70,7 @@ func InsertNewProduct(ctx context.Context, client *weaviate.Client, product Prod
 func ProductExist(client *weaviate.Client, productId int) (bool, error) {
 	where := filters.Where().
 		WithPath([]string{"productId"}).
-		WithValueText(string(productId)).
+		WithValueInt(int64(productId)).
 		WithOperator(filters.Equal)
 
 	result, err := client.GraphQL().Get().

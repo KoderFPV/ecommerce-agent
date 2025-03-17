@@ -28,17 +28,12 @@ func ImportAnswearFeed() {
 		fmt.Printf("Błąd podczas tworzenia klasy: %v\n", err)
 	}
 
+	count := 0
+
 	ReadXml(xmlPath, func(product Product) {
-		exists, err := ProductExist(client, product.ID)
+		InsertNewProduct(ctx, client, product)
+		count++
+		fmt.Printf("Dodano produkt: %s\n ", count)
 
-		if err != nil {
-		}
-
-		if !exists {
-			InsertNewProduct(ctx, client, product)
-			return
-		}
-
-		fmt.Printf("Produkt %d już istnieje w Weaviate\n", product.ID)
 	})
 }
