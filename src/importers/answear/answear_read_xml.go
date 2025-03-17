@@ -45,6 +45,7 @@ type Product struct {
 	Availability                       string           `xml:"availability"`
 	ActiveFrom                         string           `xml:"activeFrom"`
 	Sorting                            Sorting          `xml:"sorting"`
+	Base64Image                        string
 }
 
 type Pseudocategory struct {
